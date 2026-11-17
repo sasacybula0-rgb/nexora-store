@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090909">
+<title>NEXORA — цифровой магазин</title>
+<style>
+:root{--bg:#090909;--panel:#141414;--panel2:#1c1c1c;--text:#f5f5f5;--muted:#999;--red:#ff3038;--line:#292929}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Arial, sans-serif}
+a{color:inherit;text-decoration:none}button,input,textarea,select{font:inherit}
+.wrap{width:min(1160px,calc(100% - 32px));margin:auto}
+header{position:sticky;top:0;z-index:5;background:#0b0b0bf2;border-bottom:1px solid var(--line);backdrop-filter:blur(12px)}
+.nav{height:70px;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.logo{font-weight:900;font-size:24px;letter-spacing:2px}.logo span{color:var(--red)}
+.navright{display:flex;align-items:center;gap:10px}.navlink{color:#ccc;font-size:14px;margin:0 10px}
+.btn{border:0;border-radius:9px;padding:12px 16px;background:var(--red);color:white;font-weight:700;cursor:pointer}
+.btn.secondary{background:#252525;border:1px solid #383838}.btn:disabled{opacity:.5;cursor:not-allowed}
+.hero{padding:76px 0 55px;background:radial-gradient(ellipse at 85% 20%,#50131655,transparent 45%)}
+.eyebrow{color:var(--red);font-size:12px;font-weight:800;letter-spacing:3px}
+h1{font-size:clamp(42px,8vw,76px);line-height:.98;letter-spacing:-3px;margin:18px 0}
+h1 span{color:var(--red)}.hero p{max-width:570px;color:var(--muted);line-height:1.7}
+section{padding:30px 0 58px}.sectionhead{margin-bottom:22px}h2{font-size:29px;margin:0 0 8px}.muted{color:var(--muted);font-size:14px}
+.toolbar{display:flex;gap:9px;flex-wrap:wrap;margin:20px 0}
+input,textarea,select{width:100%;background:#101010;color:white;border:1px solid #343434;border-radius:9px;padding:12px;outline:none}
+input:focus,textarea:focus,select:focus{border-color:var(--red)}
+.search{flex:1;min-width:180px}.filter{background:#171717;color:#ccc;border:1px solid #333;padding:10px 14px;border-radius:9px;cursor:pointer}
+.filter.active{border-color:var(--red);color:white;background:#361315}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}
+.card{background:linear-gradient(145deg,#191919,#111);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.productimg{height:145px;background:radial-gradient(circle,#4b171a,#171111 65%);display:grid;place-items:center;font-size:48px;color:#fff;overflow:hidden}
+.productimg img{width:100%;height:100%;object-fit:cover}
+.cardbody{padding:15px}.tag{font-size:10px;letter-spacing:1.5px;color:var(--red);font-weight:800;text-transform:uppercase}
+.card h3{font-size:16px;margin:8px 0}.desc{font-size:12px;color:var(--muted);line-height:1.5;min-height:34px}
+.buyrow{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:15px}.price{font-size:18px;font-weight:900}
+.smallbtn{border:0;border-radius:8px;background:#303030;color:white;padding:9px 11px;cursor:pointer}.smallbtn:hover{background:var(--red)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;margin:20px 0}
+.hidden{display:none!important}
+.adminhead{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.formgrid .full{grid-column:1/-1}
+.adminlist{display:grid;gap:9px;margin-top:18px}.adminitem{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;background:#1b1b1b;border-radius:9px}
+.adminitem small{display:block;color:var(--muted);margin-top:4px}
+.notice{padding:12px;border-radius:9px;background:#211315;border:1px solid #572126;color:#ffdfe0;font-size:13px;line-height:1.5;margin:12px 0}
+footer{border-top:1px solid var(--line);padding:25px 0;color:var(--muted);font-size:12px}
+#toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,20px);opacity:0;background:#252525;border:1px solid #444;padding:12px 17px;border-radius:9px;transition:.2s;z-index:20;pointer-events:none}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:850px){.grid{grid-template-columns:repeat(2,1fr)}.navlink{display:none}}
+@media(max-width:520px){.wrap{width:calc(100% - 24px)}.nav{height:62px}.hero{padding:55px 0 38px}h1{letter-spacing:-2px}.grid{gap:9px}.productimg{height:112px}.cardbody{padding:11px}.card h3{font-size:14px}.desc{font-size:11px}.price{font-size:15px}.smallbtn{padding:8px}.formgrid{grid-template-columns:1fr}.formgrid .full{grid-column:auto}}
+</style>
+</head>
+<body>
+<header><div class="wrap nav">
+<a class="logo" href="#">NEX<span>ORA</span></a>
+<div class="navright"><a class="navlink" href="#catalog">Каталог</a><button class="btn secondary" id="cartBtn">Корзина <span id="cartCount">0</span></button><button class="btn" id="adminOpen">Админка</button></div>
+</div></header>
+<main>
+<div class="hero"><div class="wrap">
+<div class="eyebrow">DIGITAL GOODS STORE</div>
+<h1>ТВОЙ ЦИФРОВОЙ<br><span>МИР</span> НАЧИНАЕТСЯ ЗДЕСЬ</h1>
+<p>NEXORA — магазин цифровых товаров. Игры, скины, внутриигровая валюта и другие цифровые продукты в одном месте.</p>
+<a class="btn" href="#catalog">Открыть каталог →</a>
+</div></div>
+<section class="wrap" id="catalog">
+<div class="sectionhead"><h2>Каталог товаров</h2><div class="muted" id="catalogStatus">Загружаем товары…</div></div>
+<div class="toolbar">
+<input class="search" id="search" placeholder="Найти товар…">
+<button class="filter active" data-filter="all">Все</button>
+<button class="filter" data-filter="games">Игры</button>
+<button class="filter" data-filter="skins">Скины</button>
+<button class="filter" data-filter="currency">Валюта</button>
+<button class="filter" data-filter="other">Другое</button>
+</div>
+<div class="grid" id="products"></div>
+<p class="muted hidden" id="empty">Товаров пока нет. Загляни позже.</p>
+</section>
+
+<section class="wrap hidden" id="admin">
+<div class="panel">
+<div class="adminhead"><div><h2>Админ-панель NEXORA</h2><p class="muted" id="adminStatus">Вход администратора</p></div><button class="btn secondary hidden" id="logout">Выйти</button></div>
+<div id="loginBox">
+<div class="notice">Войди под тем email и паролем администратора, которого ты создал в Supabase Authentication → Users.</div>
+<div class="formgrid">
+<div><label class="muted">Email</label><input id="email" type="email" autocomplete="username" placeholder="admin@email.com"></div>
+<div><label class="muted">Пароль</label><input id="password" type="password" autocomplete="current-password" placeholder="Пароль"></div>
+</div>
+<button class="btn" style="margin-top:12px" id="login">Войти</button>
+</div>
+<div id="adminBox" class="hidden">
+<h3>Добавить товар</h3>
+<div class="formgrid">
+<div><label class="muted">Название</label><input id="pname" placeholder="Например, 1000 монет"></div>
+<div><label class="muted">Цена (₽)</label><input id="pprice" type="number" min="0" step="0.01" placeholder="299"></div>
+<div><label class="muted">Категория</label><select id="pcat"><option value="games">Игры</option><option value="skins">Скины</option><option value="currency">Валюта</option><option value="other">Другое</option></select></div>
+<div><label class="muted">Ссылка на изображение (необязательно)</label><input id="pimage" type="url" placeholder="https://…"></div>
+<div class="full"><label class="muted">Описание</label><textarea id="pdesc" rows="2" placeholder="Описание товара"></textarea></div>
+</div>
+<button class="btn" style="margin-top:12px" id="addProduct">Добавить товар</button>
+<h3 style="margin-top:28px">Товары в магазине</h3>
+<div class="adminlist" id="adminProducts"></div>
+</div>
+</div>
+</section>
+<section class="wrap"><div class="panel"><h2>Поддержка</h2><p class="muted">По вопросам товаров и заказов свяжись с поддержкой магазина.</p><a class="btn" href="https://t.me/" target="_blank" rel="noopener">Открыть Telegram →</a></div></section>
+</main>
+<footer><div class="wrap">© 2026 NEXORA · Цифровой магазин</div></footer>
+<div id="toast"></div>
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+// Публичные настройки проекта. Publishable/anon key можно использовать в браузере;
+// доступ к данным ограничивается политиками RLS в Supabase.
+const SUPABASE_URL = 'https://mfspejibwdxhkcshmjva.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_1I-Qidz1JbhUa-Vs5izf0g_T9tt8xzy';
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let allProducts = [];
+let cart = [];
+let activeFilter = 'all';
+
+const $ = id => document.getElementById(id);
+function toast(message) {
+  $('toast').textContent = message;
+  $('toast').classList.add('show');
+  setTimeout(() => $('toast').classList.remove('show'), 2200);
+}
+const categories = {games:'Игры', skins:'Скины', currency:'Валюта', other:'Другое'};
+function safe(value='') {
+  return String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function money(value) { return new Intl.NumberFormat('ru-RU').format(Number(value)||0) + ' ₽'; }
+
+async function loadProducts() {
+  $('catalogStatus').textContent = 'Загружаем товары…';
+  const { data, error } = await supabase.from('products').select('*').eq('is_active', true).order('created_at', {ascending:false});
+  if (error) {
+    $('catalogStatus').textContent = 'Не удалось загрузить каталог';
+    console.error(error);
+    return;
+  }
+  allProducts = data || [];
+  $('catalogStatus').textContent = `${allProducts.length} товаров`;
+  renderProducts();
+  renderAdminProducts();
+}
+function renderProducts() {
+  const query = $('search').value.trim().toLowerCase();
+  const list = allProducts.filter(p =>
+    (activeFilter === 'all' || p.category === activeFilter) &&
+    (`${p.name} ${p.description||''}`.toLowerCase().includes(query))
+  );
+  $('products').innerHTML = list.map(p => `
+    <article class="card">
+      <div class="productimg">${p.image_url ? `<img src="${safe(p.image_url)}" alt="${safe(p.name)}" onerror="this.remove()">` : '🎮'}</div>
+      <div class="cardbody"><div class="tag">${categories[p.category] || 'Цифровой товар'}</div>
+      <h3>${safe(p.name)}</h3><div class="desc">${safe(p.description || 'Цифровой товар')}</div>
+      <div class="buyrow"><span class="price">${money(p.price)}</span><button class="smallbtn" data-add="${p.id}">В корзину</button></div></div>
+    </article>`).join('');
+  $('empty').classList.toggle('hidden', list.length !== 0);
+  document.querySelectorAll('[data-add]').forEach(b => b.addEventListener('click', () => {
+    const product = allProducts.find(p => String(p.id) === b.dataset.add);
+    if (product) { cart.push(product); $('cartCount').textContent = cart.length; toast('Добавлено в корзину'); }
+  }));
+}
+function renderAdminProducts() {
+  $('adminProducts').innerHTML = allProducts.map(p => `
+    <div class="adminitem"><div><strong>${safe(p.name)}</strong><small>${money(p.price)} · ${categories[p.category] || p.category}</small></div>
+    <button class="smallbtn" data-delete="${p.id}">Удалить</button></div>`).join('') || '<p class="muted">Товаров пока нет.</p>';
+  document.querySelectorAll('[data-delete]').forEach(b => b.addEventListener('click', async () => {
+    if (!confirm('Удалить этот товар?')) return;
+    const {error} = await supabase.from('products').delete().eq('id', b.dataset.delete);
+    if (error) { toast('Ошибка удаления: ' + error.message); return; }
+    toast('Товар удалён'); await loadProducts();
+  }));
+}
+
+$('search').addEventListener('input', renderProducts);
+document.querySelectorAll('[data-filter]').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('[data-filter]').forEach(x => x.classList.remove('active'));
+  b.classList.add('active'); activeFilter = b.dataset.filter; renderProducts();
+}));
+$('adminOpen').addEventListener('click', () => $('admin').classList.toggle('hidden'));
+$('login').addEventListener('click', async () => {
+  $('login').disabled = true;
+  const {error} = await supabase.auth.signInWithPassword({email:$('email').value.trim(), password:$('password').value});
+  $('login').disabled = false;
+  if (error) { toast('Не удалось войти: ' + error.message); return; }
+  await showAdmin();
+});
+$('logout').addEventListener('click', async () => { await supabase.auth.signOut(); showAdmin(); });
+async function showAdmin() {
+  const {data:{user}} = await supabase.auth.getUser();
+  if (!user) {
+    $('loginBox').classList.remove('hidden'); $('adminBox').classList.add('hidden'); $('logout').classList.add('hidden');
+    $('adminStatus').textContent = 'Вход администратора';
+    return;
+  }
+  // Проверяем роль через защищённую функцию на сервере, а не по email/UID в браузере.
+  const {data:isAdmin, error} = await supabase.rpc('is_admin');
+  if (error || !isAdmin) {
+    await supabase.auth.signOut();
+    $('adminStatus').textContent = 'У этого аккаунта нет прав администратора.';
+    toast('Доступ запрещён'); return;
+  }
+  $('loginBox').classList.add('hidden'); $('adminBox').classList.remove('hidden'); $('logout').classList.remove('hidden');
+  $('adminStatus').textContent = 'Вы вошли как администратор';
+  await loadProducts();
+}
+$('addProduct').addEventListener('click', async () => {
+  const name = $('pname').value.trim();
+  const price = Number($('pprice').value);
+  if (!name || !Number.isFinite(price) || price < 0) { toast('Укажи название и корректную цену'); return; }
+  $('addProduct').disabled = true;
+  const product = {name, price, category:$('pcat').value, image_url:$('pimage').value.trim() || null, description:$('pdesc').value.trim(), stock:0, is_active:true};
+  const {error} = await supabase.from('products').insert(product);
+  $('addProduct').disabled = false;
+  if (error) { toast('Не удалось добавить: ' + error.message); return; }
+  ['pname','pprice','pimage','pdesc'].forEach(id => $(id).value = '');
+  toast('Товар добавлен'); await loadProducts();
+});
+$('cartBtn').addEventListener('click', () => {
+  if (!cart.length) { toast('Корзина пока пустая'); return; }
+  const total = cart.reduce((sum,p) => sum + Number(p.price), 0);
+  const summary = cart.map(p => `• ${p.name} — ${money(p.price)}`).join('\n');
+  alert(`Твоя корзина:\n\n${summary}\n\nИтого: ${money(total)}\n\nОформление заказа и онлайн-оплата подключаются отдельным защищённым этапом.`);
+});
+supabase.auth.onAuthStateChange(() => setTimeout(showAdmin, 0));
+await loadProducts();
+await showAdmin();
+</script>
+</body>
+</html>
